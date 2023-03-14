@@ -2,9 +2,9 @@ import networkx as nx
 
 from typing import List 
 
-def set_to_nx(set:List) -> nx.Graph:
+def set_to_nx(dataset:List[str]) -> nx.Graph:
     g = nx.Graph()
-    for elem in set:
+    for elem in dataset:
         g.add_node(elem[0])
         g.add_node(elem[1])
         if elem[2] == "1":

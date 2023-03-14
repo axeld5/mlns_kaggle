@@ -1,0 +1,20 @@
+import matplotlib.pyplot as plt 
+
+from sklearn.metrics import roc_curve, auc
+
+def evaluate(valid_labels, valid_preds):
+    fpr, tpr, _ = roc_curve(valid_labels, valid_preds)
+    roc_auc = auc(fpr, tpr)
+    
+    plt.figure(figsize=(6,6))
+    plt.plot(fpr, tpr, color='darkred', label='ROC curve (area = %0.3f)' % roc_auc)
+    plt.plot([0, 1], [0, 1], color='lightgray', linestyle='--')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('Receiver Operating Characteristic Curve')
+    plt.legend(loc="lower right")
+    plt.show()
+    
+    return roc_auc
