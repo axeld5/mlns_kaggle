@@ -1,0 +1,12 @@
+import networkx as nx 
+
+from typing import List 
+
+def set_to_nx(set:List) -> nx.Graph:
+    g = nx.Graph()
+    for elem in set:
+        g.add_node(elem[0])
+        g.add_node(elem[1])
+        if elem[2] == "1":
+            g.add_edge(elem[0], elem[1])
+    return g 
