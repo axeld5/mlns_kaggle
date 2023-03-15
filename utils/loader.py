@@ -15,3 +15,4 @@ def load_set(train=False) -> List[str]:
             dataset = list(reader)
         dataset = [element[0].split(" ") for element in dataset]
     return dataset
+
