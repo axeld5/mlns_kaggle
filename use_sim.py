@@ -18,8 +18,6 @@ if __name__ == "__main__":
     train_set = load_set(train=True)
     g = set_to_nx(train_set)
     non_edges = get_non_edges(train_set)
-    #print(g.number_of_nodes())
-    #print(g.number_of_edges())
     residual_g, train_samples, train_labels, valid_samples, valid_labels = generate_samples(g, non_edges, 0.9)
     train_features = feature_extractor(residual_g, train_samples)
     valid_features = feature_extractor(residual_g, valid_samples)
