@@ -10,7 +10,7 @@ from utils.to_nx import set_to_nx
 from utils.get_non_edges import get_non_edges
 from utils.generate_valid_samples import generate_samples
 from utils.create_submission import create_submission
-from methods.node_extractor import feature_extractor
+from methods.traditional.similarities.sim_extractor import feature_extractor
 from evaluate import evaluate
 
 #AdamicAdar not working, likely due to self loops
