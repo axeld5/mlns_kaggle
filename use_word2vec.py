@@ -10,7 +10,7 @@ from utils.to_nx import set_to_nx
 from utils.get_non_edges import get_non_edges
 from utils.generate_valid_samples import generate_samples
 from utils.create_submission import create_submission
-from methods.feature_extractor import feature_extractor
+from methods.wv_extractor import feature_extractor, get_node_embedding
 from evaluate import evaluate
 
 #AdamicAdar not working, likely due to self loops
@@ -20,18 +20,22 @@ if __name__ == "__main__":
     non_edges = get_non_edges(train_set)
     #print(g.number_of_nodes())
     #print(g.number_of_edges())
-    residual_g, train_samples, train_labels, valid_samples, valid_labels = generate_samples(g, non_edges, 0.9)
-    train_features = feature_extractor(residual_g, train_samples)
-    valid_features = feature_extractor(residual_g, valid_samples)
+    residual_g, train_samples, train_labels, valid_samples, valid_labels = generate_samples(g, non_edges, 0.8)
+    print("samples generated")
+    node_embedding = get_node_embedding(residual_g)
+    print("node_embeddings gotten")
+    train_features = feature_extractor(train_samples, node_embedding)
+    valid_features = feature_extractor(valid_samples, node_embedding)
+    print("features extracted")
     clf = LogisticRegression()
     clf.fit(train_features, train_labels)
+    print("training done")
 
     valid_preds = clf.predict_proba(valid_features)[:, 1]
     evaluate(valid_labels, valid_preds)
 
     test_set = load_set(train=False)
     n_test = len(test_set)
-    test_features = feature_extractor(residual_g, test_set) 
+    test_features = feature_extractor(test_set, node_embedding) 
     pred = clf.predict(test_features)
-    create_submission(n_test, pred, pred_name="features_extracted_pred")
-
+    create_submission(n_test, pred, pred_name="word2vec_pred")
