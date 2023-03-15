@@ -7,6 +7,7 @@ import dgl.data
 import networkx as nx
 
 from evaluate import evaluate_torch
+from utils.get_non_edges import get_non_edges
 from utils.loader import load_set
 from utils.to_nx import set_to_nx
 from utils.info_to_dict import info_to_dict
@@ -27,7 +28,7 @@ if __name__ == "__main__":
         convert_dict[node] = i
     g = dgl.from_networkx(nx_g, node_attrs=["feat"], idtype=torch.int32)
     u, v = g.edges()
-
+    print(u.shape)
     eids = np.arange(g.number_of_edges())
     eids = np.random.permutation(eids)
     test_size = int(len(eids) * 0.1)
@@ -36,11 +37,15 @@ if __name__ == "__main__":
     train_pos_u, train_pos_v = u[eids[test_size:]], v[eids[test_size:]]
 
     # Find all negative edges and split them for training and testing
-
-    """Perhaps this step is wrong and the train dataset lacks in positive relations !!!"""
-    adj = sp.coo_matrix((np.ones(len(u)), (u.numpy(), v.numpy())))
-    adj_neg = 1 - adj.todense() - np.eye(g.number_of_nodes())
-    neg_u, neg_v = np.where(adj_neg != 0)
+    non_edges = get_non_edges(train_set)
+    non_edges_indic = np.ones((g.number_of_nodes(), g.number_of_nodes()))
+    for elem in non_edges: 
+        idx_0 = convert_dict[elem[0]] 
+        idx_1 = convert_dict[elem[1]]
+        non_edges_indic[idx_0][idx_1] = 0
+        non_edges_indic[idx_1][idx_0] = 0
+    neg_u, neg_v = np.where(non_edges_indic == 0)
+    
 
     neg_eids = np.random.choice(len(neg_u), g.number_of_edges())
     test_neg_u, test_neg_v = neg_u[neg_eids[:test_size]], neg_v[neg_eids[:test_size]]
@@ -54,8 +59,8 @@ if __name__ == "__main__":
     test_neg_g = dgl.graph((test_neg_u, test_neg_v), num_nodes=g.number_of_nodes())
 
     #Define model, optimizer, and training step
-    model = GraphSAGE(train_g.ndata['feat'].shape[1], 256)
-    pred = MLPPredictor(256)
+    model = GraphSAGE(train_g.ndata['feat'].shape[1], 16)
+    pred = MLPPredictor(16)
     optimizer = torch.optim.Adam(itertools.chain(model.parameters(), pred.parameters()), lr=0.01)
     all_logits = []
     train(model, pred, train_g, train_pos_g, train_neg_g, optimizer, num_epochs=250)
