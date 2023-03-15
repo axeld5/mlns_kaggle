@@ -11,15 +11,13 @@ from utils.get_non_edges import get_non_edges
 from utils.generate_valid_samples import generate_samples
 from utils.create_submission import create_submission
 from methods.traditional.similarities.sim_extractor import feature_extractor
-from evaluate import evaluate
+from evaluate import evaluate_tradi
 
 #AdamicAdar not working, likely due to self loops
 if __name__ == "__main__":
     train_set = load_set(train=True)
     g = set_to_nx(train_set)
     non_edges = get_non_edges(train_set)
-    #print(g.number_of_nodes())
-    #print(g.number_of_edges())
     residual_g, train_samples, train_labels, valid_samples, valid_labels = generate_samples(g, non_edges, 0.9)
     train_features = feature_extractor(residual_g, train_samples)
     valid_features = feature_extractor(residual_g, valid_samples)
@@ -27,7 +25,7 @@ if __name__ == "__main__":
     clf.fit(train_features, train_labels)
 
     valid_preds = clf.predict_proba(valid_features)[:, 1]
-    evaluate(valid_labels, valid_preds)
+    evaluate_tradi(valid_labels, valid_preds)
 
     test_set = load_set(train=False)
     n_test = len(test_set)

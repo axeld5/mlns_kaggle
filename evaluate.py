@@ -1,8 +1,10 @@
+import torch 
+import torch.nn.functional as F
 import matplotlib.pyplot as plt 
 
-from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import roc_curve, auc, roc_auc_score
 
-def evaluate(valid_labels, valid_preds):
+def evaluate_tradi(valid_labels, valid_preds):
     fpr, tpr, _ = roc_curve(valid_labels, valid_preds)
     roc_auc = auc(fpr, tpr)
     
@@ -18,3 +20,9 @@ def evaluate(valid_labels, valid_preds):
     plt.show()
     
     return roc_auc
+
+def evaluate_torch(pos_score, neg_score):
+    scores = torch.cat([pos_score, neg_score]).numpy()
+    labels = torch.cat(
+        [torch.ones(pos_score.shape[0]), torch.zeros(neg_score.shape[0])]).numpy()
+    return roc_auc_score(labels, scores)

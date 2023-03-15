@@ -10,16 +10,14 @@ from utils.to_nx import set_to_nx
 from utils.get_non_edges import get_non_edges
 from utils.generate_valid_samples import generate_samples
 from utils.create_submission import create_submission
-from methods.nv_extractor import feature_extractor, get_node_embedding
-from evaluate import evaluate
+from methods.traditional.n2v.nv_extractor import feature_extractor, get_node_embedding
+from evaluate import evaluate_tradi
 
 #AdamicAdar not working, likely due to self loops
 if __name__ == "__main__":
     train_set = load_set(train=True)
     g = set_to_nx(train_set)
     non_edges = get_non_edges(train_set)
-    #print(g.number_of_nodes())
-    #print(g.number_of_edges())
     residual_g, train_samples, train_labels, valid_samples, valid_labels = generate_samples(g, non_edges, 0.8)
     print("samples generated")
     node_embedding = get_node_embedding(residual_g)
@@ -32,7 +30,7 @@ if __name__ == "__main__":
     print("training done")
 
     valid_preds = clf.predict_proba(valid_features)[:, 1]
-    evaluate(valid_labels, valid_preds)
+    evaluate_tradi(valid_labels, valid_preds)
 
     test_set = load_set(train=False)
     n_test = len(test_set)
