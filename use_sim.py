@@ -11,7 +11,7 @@ from utils.get_non_edges import get_non_edges
 from utils.generate_valid_samples import generate_samples
 from utils.create_submission import create_submission
 from methods.traditional.similarities.sim_extractor import feature_extractor
-from evaluate import evaluate
+from evaluate import evaluate_tradi
 
 #AdamicAdar not working, likely due to self loops
 if __name__ == "__main__":
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     clf.fit(train_features, train_labels)
 
     valid_preds = clf.predict_proba(valid_features)[:, 1]
-    evaluate(valid_labels, valid_preds)
+    evaluate_tradi(valid_labels, valid_preds)
 
     test_set = load_set(train=False)
     n_test = len(test_set)
