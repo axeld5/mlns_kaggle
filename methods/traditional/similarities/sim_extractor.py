@@ -43,6 +43,6 @@ def feature_extractor(graph, samples):
         
         # Create edge feature vector with all metric computed above
         feature_vector.append([source_degree_centrality, target_degree_centrality, 
-                                diff_bt, pref_attach, jacard_coeff, diff_pagerank, diff_cluster]) 
+                                diff_bt, pref_attach, jacard_coeff]) 
     feature_vector = np.array(feature_vector)
     return feature_vector
