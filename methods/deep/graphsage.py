@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from dgl.nn import SAGEConv
 
 class GraphSAGE(nn.Module):
-    def __init__(self, in_feats, h_feats, n_layers, dropout, skip=False):
+    def __init__(self, in_feats, h_feats, output_feats, n_layers, dropout, skip=False):
         super(GraphSAGE, self).__init__()
         self.convs = nn.ModuleList()
         first_conv = SAGEConv(in_feats, h_feats, 'mean')
@@ -13,7 +13,7 @@ class GraphSAGE(nn.Module):
         for i in range(n_layers - 2):
             add_conv = SAGEConv(h_feats, h_feats, 'mean')
             self.convs.append(add_conv)
-        last_conv = SAGEConv(h_feats, h_feats, 'mean')
+        last_conv = SAGEConv(h_feats, output_feats, 'mean')
         self.convs.append(last_conv)
         self.dropout = dropout
         self.skip = skip
@@ -32,3 +32,4 @@ class GraphSAGE(nn.Module):
             h = F.dropout(h, p=self.dropout, training=self.training)
         h = self.convs[-1](g, h)
         return h
+
