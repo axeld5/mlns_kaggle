@@ -7,6 +7,8 @@ def compute_loss(pos_score, neg_score):
     return F.binary_cross_entropy_with_logits(scores, labels)
 
 def train(model, pred, train_g, train_pos_g, train_neg_g, optimizer, num_epochs=100):
+    model.train()
+    pred.train()
     for e in range(num_epochs):
         # forward
         h = model(train_g, train_g.ndata['feat'])
