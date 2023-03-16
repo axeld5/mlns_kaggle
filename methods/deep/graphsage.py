@@ -18,12 +18,15 @@ class GraphSAGE(nn.Module):
         self.dropout = dropout
         self.skip = skip
 
-    def forward(self, g, h):
+    def forward(self, g, in_feat):
         prev_h = None
-        for i, conv in enumerate(self.convs[:self.n_layers-1]):
+        h = self.convs[0](g, in_feat)
+        h = F.relu(h) 
+        h = F.dropout(h, p=self.dropout, training=self.training)
+        for conv in self.convs[1:self.n_layers-1]:
             prev_h = h
             h = conv(g, h)            
-            if self.skip and i > 0:
+            if self.skip:
                 h = h + prev_h
             h = F.relu(h)
             h = F.dropout(h, p=self.dropout, training=self.training)
