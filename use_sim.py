@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np 
 
 from sklearn.linear_model import LogisticRegression 
+from xgboost import XGBClassifier
 
 from utils.loader import load_set
 from utils.to_nx import set_to_nx

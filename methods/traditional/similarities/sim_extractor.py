@@ -15,6 +15,10 @@ def feature_extractor(graph, samples):
     # Betweeness centrality measure
     betweeness_centrality = nx.betweenness_centrality(graph)
 
+    pagerank_analysis = nx.algorithms.link_analysis.pagerank(graph)
+
+    cluster_analysis = nx.algorithms.cluster.clustering(graph)
+
     for edge in tqdm.tqdm(samples):
         source_node, target_node = edge[0], edge[1]
 
@@ -30,9 +34,15 @@ def feature_extractor(graph, samples):
 
         # Jaccard
         jacard_coeff = list(nx.jaccard_coefficient(graph, [(source_node, target_node)]))[0][2]
+
+        # Pagerank
+        diff_pagerank = pagerank_analysis[target_node] - pagerank_analysis[source_node]
+
+        # Cluster
+        diff_cluster = cluster_analysis[target_node] - cluster_analysis[source_node]
         
         # Create edge feature vector with all metric computed above
         feature_vector.append([source_degree_centrality, target_degree_centrality, 
-                                        diff_bt, pref_attach, jacard_coeff]) 
+                                diff_bt, pref_attach, jacard_coeff, diff_pagerank, diff_cluster]) 
     feature_vector = np.array(feature_vector)
     return feature_vector
