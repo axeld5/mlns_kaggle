@@ -59,14 +59,16 @@ if __name__ == "__main__":
     test_neg_g = dgl.graph((test_neg_u, test_neg_v), num_nodes=g.number_of_nodes())
 
     #Define model, optimizer, and training step
-    model = GraphSAGE(train_g.ndata['feat'].shape[1], 16)
+    model = GraphSAGE(train_g.ndata['feat'].shape[1], 16, n_layers=5, dropout=0.3)
     pred = MLPPredictor(16)
     optimizer = torch.optim.Adam(itertools.chain(model.parameters(), pred.parameters()), lr=0.01)
     all_logits = []
-    train(model, pred, train_g, train_pos_g, train_neg_g, optimizer, num_epochs=100)
+    train(model, pred, train_g, train_pos_g, train_neg_g, optimizer, num_epochs=250)
 
     #make a test
     with torch.no_grad():
+        model.eval()
+        pred.eval()
         h = model(train_g, train_g.ndata['feat'])
         pos_score = pred(test_pos_g, h)
         neg_score = pred(test_neg_g, h)
