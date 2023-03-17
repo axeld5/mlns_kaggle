@@ -24,7 +24,8 @@ if __name__ == "__main__":
     extractor = FeatureExtractor()
     train_features = extractor.feature_extract(residual_g, train_samples, convert_dict, info_embedding, train=True)
     valid_features = extractor.feature_extract(residual_g, valid_samples, convert_dict, info_embedding, train=False)
-    clf = LogisticRegression(max_iter=1000)
+    #clf = LogisticRegression()
+    clf = XGBClassifier()
     clf.fit(train_features, train_labels)
 
     valid_preds = clf.predict_proba(valid_features)[:, 1]

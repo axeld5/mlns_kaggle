@@ -3,7 +3,8 @@ import networkx as nx
 import pandas as pd 
 import numpy as np 
 
-from sklearn.linear_model import LogisticRegression 
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier 
 from sklearn.decomposition import PCA 
 from xgboost import XGBClassifier
 
@@ -27,11 +28,13 @@ if __name__ == "__main__":
     for i, idx in enumerate(node_names):
         convert_dict[str(idx)] = i 
     node_information.drop(node_information.columns[0], axis=1, inplace=True)
-    info_embedding = PCA(n_components=12).fit_transform(node_information.to_numpy())
+    info_embedding = PCA(n_components=32).fit_transform(node_information.to_numpy())
     extractor = FeatureExtractor()
     train_features = extractor.feature_extract(residual_g, train_samples, convert_dict, info_embedding, train=True)
     valid_features = extractor.feature_extract(residual_g, valid_samples, convert_dict, info_embedding, train=False)
+    #clf = RandomForestClassifier()
     clf = LogisticRegression()
+    #clf = XGBClassifier()
     clf.fit(train_features, train_labels)
 
     valid_preds = clf.predict_proba(valid_features)[:, 1]
