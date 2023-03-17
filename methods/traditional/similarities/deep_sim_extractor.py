@@ -1,9 +1,8 @@
 import tqdm
 import networkx as nx 
-import numpy as np
+import numpy as np 
 
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics.pairwise import cosine_similarity
 
 #AdamicAdar could not be imported due to self loops
 
@@ -20,6 +19,7 @@ class FeatureExtractor:
         
         # Degree Centrality measure
         deg_centrality = nx.degree_centrality(graph)
+        
         # Betweeness centrality measure
         betweeness_centrality = nx.betweenness_centrality(graph)
 
@@ -31,25 +31,26 @@ class FeatureExtractor:
             target_degree_centrality = deg_centrality[target_node]
             
             # Betweeness centrality measure 
-            diff_bt = np.abs(betweeness_centrality[target_node] - betweeness_centrality[source_node])
+            diff_bt = betweeness_centrality[target_node] - betweeness_centrality[source_node]
+
             # Preferential Attachement 
             pref_attach = list(nx.preferential_attachment(graph, [(source_node, target_node)]))[0][2]
+
             # Jaccard
             jacard_coeff = list(nx.jaccard_coefficient(graph, [(source_node, target_node)]))[0][2]
+
             # Add embedding 
             source_emb_idx = convert_dict[source_node]
             target_emb_idx = convert_dict[target_node]
-            source_emb = info_embedding[source_emb_idx, :]
-            target_emb = info_embedding[target_emb_idx, :]
-            info_emb = cosine_similarity(source_emb.reshape(1, -1), target_emb.reshape(1, -1))[0, 0]
+            source_emb = info_embedding[source_emb_idx, :].numpy()
+            target_emb = info_embedding[target_emb_idx, :].numpy()
 
-            # Shortest path
-            #shortest_path_length = nx.shortest_path_length(graph, source_node, target_node)
-
-            features = np.array([source_degree_centrality, target_degree_centrality,
-                                    diff_bt, pref_attach, jacard_coeff, info_emb])
+            unsup_features = np.array([source_degree_centrality, target_degree_centrality, 
+                                    diff_bt, pref_attach, jacard_coeff])
+            concat_features = np.concatenate((unsup_features, source_emb, target_emb))
+            
             # Create edge feature vector with all metric computed above
-            feature_vector.append(features) 
+            feature_vector.append(concat_features) 
         feature_vector = np.array(feature_vector)
         if train:
             feature_vector = self.scaler.fit_transform(feature_vector)
