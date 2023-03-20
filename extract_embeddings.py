@@ -13,7 +13,7 @@ from utils.to_nx import set_to_nx
 from utils.info_to_dict import info_to_dict
 from utils.create_submission import create_submission
 from methods.deep.graphsage import GraphSAGE
-from methods.deep.predictors import MLPPredictor, DotPredictor
+from methods.deep.predictors import MLPPredictor, DotPredictor, MLPUpgradedPredictor
 from methods.deep.train_models import train
 
 if __name__ == "__main__":
@@ -59,8 +59,8 @@ if __name__ == "__main__":
     test_neg_g = dgl.graph((test_neg_u, test_neg_v), num_nodes=g.number_of_nodes())
 
     #Define model, optimizer, and training step
-    model = GraphSAGE(train_g.ndata['feat'].shape[1], 32, 16, n_layers=3, dropout=0.6, skip=True)
-    pred = MLPPredictor(16)
+    model = GraphSAGE(train_g.ndata['feat'].shape[1], 32, 16, n_layers=3, dropout=0, skip=True)
+    pred = MLPUpgradedPredictor(16)
     optimizer = torch.optim.Adam(itertools.chain(model.parameters(), pred.parameters()), lr=0.01)
     all_logits = []
     train(model, pred, train_g, train_pos_g, train_neg_g, optimizer, num_epochs=100)
