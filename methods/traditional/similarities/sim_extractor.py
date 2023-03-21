@@ -69,7 +69,7 @@ class FeatureExtractor:
 
             
 
-            vect_features = np.array([dg_avg, dg_std, btw_avg, btw_std, p_rank_avg, p_rank_std, hubs_avg, hubs_std, auth_avg, auth_std, pref_attach, jacard_coeff, rai])
+            #vect_features = np.array([dg_avg, dg_std, btw_avg, btw_std, p_rank_avg, p_rank_std, hubs_avg, hubs_std, auth_avg, auth_std, pref_attach, jacard_coeff, rai])
             # Create edge feature vector with all metric computed above
 
             ## Add embedding 
@@ -80,8 +80,8 @@ class FeatureExtractor:
             emb_avg = (source_emb + target_emb)/2
             emb_std = (source_emb - target_emb)**2
             emb_features = np.concatenate([emb_avg.numpy(), emb_std.numpy()])
-            features = np.concatenate((vect_features, emb_features))
-            
+            #features = np.concatenate((vect_features, emb_features))
+            features = np.array([dg_avg, dg_std, btw_avg, btw_std, p_rank_avg, p_rank_std, pref_attach])
             feature_vector.append(features) 
         feature_vector = np.array(feature_vector)
         if train:
