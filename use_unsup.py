@@ -10,6 +10,8 @@ from utils.to_nx import set_to_nx
 from utils.get_non_edges import get_non_edges
 from utils.create_submission import create_submission
 from methods.traditional.similarities.unsup_extractor import FeatureExtractor
+from check import enrich_test
+from sklearn.metrics import accuracy_score
 
 if __name__ == "__main__":
     train_set = load_set(train=True)
@@ -24,4 +26,6 @@ if __name__ == "__main__":
         idx = sorted_features[i]
         pred[idx] = 1
     n_test = len(test_features)
+    y = enrich_test(False)["y"].to_list() 
+    print(accuracy_score(pred, y))
     create_submission(n_test, pred, pred_name="unsupervised_pred")

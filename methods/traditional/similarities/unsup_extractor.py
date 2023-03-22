@@ -27,7 +27,6 @@ class FeatureExtractor:
             jacard_coeff = list(nx.jaccard_coefficient(graph, [(source_node, target_node)]))[0][2]
             # Ressource Allocation Index
             rai = list(nx.resource_allocation_index(graph, [(source_node, target_node)]))[0][2]
-
             #features = np.concatenate((vect_features, emb_features))
             features = np.array([jacard_coeff, rai, pref_attach])
             feature_vector.append(features) 

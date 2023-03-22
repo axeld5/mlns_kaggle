@@ -6,6 +6,8 @@ import scipy.sparse as sp
 import dgl.data
 import networkx as nx
 
+from sklearn.metrics import accuracy_score
+
 from evaluate import evaluate_torch
 from utils.get_non_edges import get_non_edges
 from utils.loader import load_set
@@ -13,8 +15,9 @@ from utils.to_nx import set_to_nx, set_to_directed_nx
 from utils.info_to_dict import info_to_dict
 from utils.create_submission import create_submission
 from methods.deep.graphsage import GraphSAGE
-from methods.deep.predictors import MLPPredictor, DotPredictor
+from methods.deep.predictors import MLPPredictor, DotPredictor, MLPUpgradedPredictor
 from methods.deep.train_models import train
+from check import enrich_test
 
 if __name__ == "__main__":
     #create dgl graph
@@ -60,11 +63,11 @@ if __name__ == "__main__":
     test_neg_g = dgl.graph((test_neg_u, test_neg_v), num_nodes=g.number_of_nodes())
 
     #Define model, optimizer, and training step
-    model = GraphSAGE(train_g.ndata['feat'].shape[1], 64, 32, n_layers=5, dropout=0.1, skip=True)
-    pred = MLPPredictor(32)
-    optimizer = torch.optim.Adam(itertools.chain(model.parameters(), pred.parameters()), lr=0.001, weight_decay=5*10**-4)
+    model = GraphSAGE(train_g.ndata['feat'].shape[1], 64, 32, n_layers=3, dropout=0, skip=False)
+    pred = MLPUpgradedPredictor(32)
+    optimizer = torch.optim.Adam(itertools.chain(model.parameters(), pred.parameters()), lr=0.005, weight_decay=5*10**-4)
     all_logits = []
-    train(model, pred, train_g, train_pos_g, train_neg_g, optimizer, num_epochs=500)
+    train(model, pred, train_g, train_pos_g, train_neg_g, optimizer, num_epochs=250)
 
     #make a test
     with torch.no_grad():
@@ -92,4 +95,6 @@ if __name__ == "__main__":
         else:
             test_pred[i] = 1
     n_test = len(test_set)
+    y = enrich_test(False)["y"].to_list() 
+    print(accuracy_score(test_pred, y))
     create_submission(n_test, test_pred, pred_name="gnn")
