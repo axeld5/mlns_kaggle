@@ -1,9 +1,11 @@
 import pandas as pd 
+import networkx as nx 
 import torch
 from torch_geometric.utils.convert import from_networkx
 
 from .loader import load_set
 from .to_nx import set_to_nx
+from .info_to_dict import info_to_dict
 
 
 def info_to_torch():
@@ -15,7 +17,7 @@ def info_to_torch():
 def to_geometric(train:bool=True):
     set = load_set(train)
     g = set_to_nx(set)
-    data = from_networkx(g)
-    node_data = info_to_torch()
-    data.x = node_data 
+    node_dict = info_to_dict()
+    nx.set_node_attributes(g, values=node_dict, name="feat")    
+    data = from_networkx(g, group_node_attrs=["feat"])
     return data
