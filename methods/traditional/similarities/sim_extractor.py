@@ -2,14 +2,14 @@ import tqdm
 import networkx as nx 
 import numpy as np
 
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics.pairwise import cosine_similarity
 
 #AdamicAdar could not be imported due to self loops
 
 
 class FeatureExtractor:
-    def __init__(self, scaler=StandardScaler()) -> None:
+    def __init__(self, scaler=MinMaxScaler()) -> None:
         self.scaler = scaler
 
     def feature_extract(self, graph, samples, convert_dict, info_embedding, train):
