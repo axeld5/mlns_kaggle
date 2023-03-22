@@ -8,9 +8,9 @@ from utils.create_submission import create_submission
 
 if __name__ == "__main__":
     unsup_pred = pd.read_csv("submissions/unsupervised_pred.csv").to_numpy()
-    gnn_pred = pd.read_csv("submissions/gnn.csv").to_numpy()
+    #gnn_pred = pd.read_csv("submissions/gnn.csv").to_numpy()
     sup_pred = pd.read_csv("submissions/supervised_pred.csv").to_numpy() 
-    final_pred = 1/3*(unsup_pred + gnn_pred + sup_pred)[:, 1]
+    final_pred = (0.6*sup_pred+0.4*unsup_pred)[:, 1]
     for i in range(len(final_pred)):
         if final_pred[i] > 0.5:
             final_pred[i] = 1

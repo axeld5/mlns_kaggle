@@ -25,7 +25,10 @@ parser.add_argument('--scaling_factor', type=float, default=1)
 parser.add_argument('--training_rate', type=float, default=0.8) 
 args = parser.parse_args()
 
+dev = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 data = to_geometric(train=True)
+data.x = data.x.to_dense()
+data = T.NormalizeFeatures()(data)
 
 class Encoder(torch.nn.Module):
     def __init__(self, in_channels, out_channels, edge_index):
@@ -64,7 +67,6 @@ class Decoder(torch.nn.Module):
         h = torch.cat([avg, var], 1)
         return torch.sigmoid(self.W2(F.relu(self.W1(h)))).squeeze(1)
 
-dev = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 channels = args.channels
 train_rate = args.training_rate
 val_ratio = 0
@@ -77,8 +79,19 @@ if args.model == 'GNAE':
 if args.model == 'VGNAE':
     model = VGAE(Encoder(data.x.size()[1], channels, data.train_pos_edge_index)).to(dev)
 
+config = {
+    "ray": True,
+    "verbose": False,
+    "data": data,
+    "max_epochs":300,
+    "save": True,
+    "model": "VGNAE",
+    "channels": 64,
+    "scaling": 0
+}
+
 x, train_pos_edge_index = data.x.to(dev), data.train_pos_edge_index.to(dev)
-optimizer = torch.optim.Adam(model.parameters(), lr=0.005, weight_decay=1e-5)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.0001, weight_decay=1e-5)
 
 train_set = load_set(train=True)
 
@@ -125,14 +138,11 @@ for i, elem in enumerate(test_set):
     test_indexes[1][i] = convert_dict[elem[1]]
 test_indexes = test_indexes.to(torch.long).to(dev)
 test_pred = model.decode(model.encode(x, test_indexes), test_indexes)
-y = enrich_test(False)["y"].to_list() 
 
 import numpy as np 
-from sklearn.metrics import accuracy_score 
 pred = np.zeros(len(test_set))
 for i, elem in enumerate(test_pred): 
     if elem.item() > 0.5:
         pred[i] = 1
     else:
         pred[i] = 0
-print(accuracy_score(pred, y))
