@@ -1,7 +1,9 @@
 import torch
 import pandas as pd 
 
-def info_to_dict():
+from typing import Dict
+
+def info_to_dict() -> Dict[str, torch.Tensor]:
     node_information = pd.read_csv("node_information.csv", sep=",", header=None)
     node_names = node_information[node_information.columns[0]]
     node_information.drop(node_information.columns[0], axis=1, inplace=True)
