@@ -48,10 +48,8 @@ class MLPPredictor(nn.Module):
 class MLPUpgradedPredictor(nn.Module):
     def __init__(self, h_feats):
         super().__init__()
-        self.W1 = nn.Linear(h_feats * 2, h_feats * 4)
-        self.W2 = nn.Linear(h_feats * 4, h_feats * 2)
-        self.W3 = nn.Linear(h_feats * 2, h_feats)
-        self.W4 = nn.Linear(h_feats, 1)
+        self.W1 = nn.Linear(h_feats * 2, h_feats)
+        self.W2 = nn.Linear(h_feats, 1)
 
     def apply_edges(self, edges):
         """
@@ -73,7 +71,7 @@ class MLPUpgradedPredictor(nn.Module):
         avg = (edges.src['h']+edges.dst['h'])/2
         var = (edges.src['h']-edges.dst['h'])**2
         h = torch.cat([avg, var], 1)
-        return {'score': self.W4(F.relu(self.W3(F.relu(self.W2(F.relu(self.W1(h))))))).squeeze(1)}
+        return {'score': self.W2(F.relu(self.W1(h))).squeeze(1)}
 
     def forward(self, g, h):
         with g.local_scope():
