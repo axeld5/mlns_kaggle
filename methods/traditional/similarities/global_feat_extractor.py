@@ -3,7 +3,6 @@ import networkx as nx
 import numpy as np
 
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.metrics.pairwise import cosine_similarity
 
 class FeatureExtractor:
     def __init__(self, scaler=MinMaxScaler()) -> None:
