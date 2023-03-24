@@ -4,8 +4,6 @@ import numpy as np
 
 from sklearn.preprocessing import MinMaxScaler
 
-#AdamicAdar could not be imported due to self loops
-
 class FeatureExtractor:
     def __init__(self, scaler=MinMaxScaler()) -> None:
         self.scaler = scaler
