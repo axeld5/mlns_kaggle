@@ -5,7 +5,6 @@ from utils.loader import load_set
 from utils.to_nx import set_to_nx
 from utils.create_submission import create_submission
 from methods.traditional.similarities.unsup_extractor import FeatureExtractor
-from sklearn.metrics import accuracy_score
 
 if __name__ == "__main__":
     train_set = load_set(train=True)

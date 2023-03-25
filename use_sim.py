@@ -8,7 +8,6 @@ from utils.generate_valid_samples import generate_samples
 from utils.create_submission import create_submission
 from methods.traditional.similarities.global_feat_extractor import FeatureExtractor
 
-#AdamicAdar not working, likely due to self loops
 if __name__ == "__main__":
     train_set = load_set(train=True)
     g = set_to_nx(train_set)

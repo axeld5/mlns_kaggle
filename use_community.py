@@ -3,7 +3,6 @@ from utils.to_nx import set_to_nx
 from utils.create_submission import create_submission
 from methods.traditional.similarities.community_maker import get_community_based_pred
 
-#AdamicAdar not working, likely due to self loops
 if __name__ == "__main__":
     train_set = load_set(train=True)
     g = set_to_nx(train_set)

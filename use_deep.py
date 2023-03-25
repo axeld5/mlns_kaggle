@@ -2,7 +2,6 @@ import dgl
 import torch
 import itertools
 import numpy as np
-import scipy.sparse as sp
 import dgl.data
 import networkx as nx
 
