@@ -14,7 +14,6 @@ from utils.loader import load_set
 from utils.to_nx import set_to_nx
 from utils.get_non_edges import get_non_edges
 from utils.to_geometric import to_geometric
-from check import enrich_test
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--model', type=str, default='VGNAE')
